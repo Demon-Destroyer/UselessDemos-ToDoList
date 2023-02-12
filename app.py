@@ -1,5 +1,6 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect,url_for, request
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ToDoTaskListDB.sqlite'
@@ -13,19 +14,57 @@ class task(db.Model):
     t_title = db.Column(db.String(100), unique=True, nullable=False)
     t_des = db.Column(db.String(500))
     t_date = db.Column(db.String(50))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.u_id'), nullable=False)
+
+class Users(db.Model):
+    __tablename__ = 'users'
+    u_id = db.Column(db.Integer, primary_key=True)
+    u_name = db.Column(db.String(50))
+    u_email = db.Column(db.String(200), unique=True, nullable=False)
+    u_password = db.Column(db.String(100), nullable=False)
+    u_tasks = db.relationship("task", backref='users', lazy=True)
+
 
 @app.route('/')
 def login():
     return render_template("login.html")
 
-@app.route('/task/view')
+@app.route('/user/create', methods=["POST", "GET"])
+def addUser():
+    if request.method == "GET":
+        return render_template("createUser.html")
+    else:
+        name = request.form["userName"]
+        email = request.form["userEmail"]
+        password = request.form["password"]
+
+        u = Users(u_name=name,u_email=email,u_password=password)
+        db.session.add(u)
+        db.session.commit()
+        return redirect('/')
+
+@app.route('/task/views',methods=["POST","GET"])
 def viewTask():
+    if request.method == "POST":
+        email = request.form["userEmail"]
+        password = request.form["password"]
+        u = Users.query.filter_by(u_email=email).first()
+        v = u.u_password
+        if u and (v == password):
+            return redirect('/task/view')
+        else:
+            return render_template("notFound.html")
+
+# @app.route('/tasks/view/<int:user_id>')
+# def tasks_for_user(user_id):
+#     user = Users.query.get(user_id)
+#     tasks = user.tasks
+#     return render_template('tasks.html', t_d=tasks)            
+
+@app.route('/task/view')
+def viewTasks():
     data = task.query.all()
     return render_template("tasks.html", t_d = data)
-
-@app.route('/task/create')
-def createTask():
-    return render_template("createTask.html")
 
 @app.route('/task/create', methods=["POST","GET"])
 def addTask():
@@ -40,7 +79,7 @@ def addTask():
         des = request.form["taskDes"]
         date = request.form["taskDate"]
         
-        s = task(t_title=title, t_des = des, t_date = date)
+        s = task(t_title=title, t_des = des, t_date = date,user_id=1)
         
         db.session.add(s)
         db.session.commit()
