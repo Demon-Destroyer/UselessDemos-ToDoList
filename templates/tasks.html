@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styleToDo.css')}}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-sm-10 offset-sm-1">
+                <div class="myCont">
+                    
+                <h1 class="text-center text-capitalize text-success">Task List</h1>
+                {% if t_d|length == 0 %}
+                <h2>No tasks found. Add tasks now !!</h2> 
+                {% else %}
+                <table class="table table-bordered table-responsive-sm table-responsive-md table-responsive-lg" id="all_tasks">
+                    <tr>
+                        <th>Sr.No</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Complete By</th>
+                        <th>Update/Delete</th>
+                    </tr>
+                    {% for i in t_d %}
+                    <tr>
+                        <td>{{i["t_id"]}}</td>
+                        <td>{{i["t_title"]}}</td>
+                        <td>{{i["t_des"]}}</td>
+                        <td>{{i["t_date"]}}</td>
+                        <td>
+                            <a href="/task/{{i['t_id']}}/update" type="button"><button class="btn btn-info btn-sm">Update</button></a>
+                            <a href="/task/{{i['t_id']}}/delete" type="button"><button class="btn btn-danger btn-sm">Delete</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}         
+                <a href="/task/create"><button class="btn btn-success btn-lg">Create Task</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

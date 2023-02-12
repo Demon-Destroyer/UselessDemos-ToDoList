@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Already Exits</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='styleToDo.css')}}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-sm-10 offset-sm-1">
+                <div class="myCont">
+                    {% if data == 's' %}
+                    <h2 class="text-center">Task Already Exits. Create a new Task or Update the exiting one.</h2>
+                    <a href="/task/create"> <button type="submit" class="btn btn-success btn-lg btnExits">Create New Task</button></a>
+                    <a href="/task/{{['t_id']}}/update"><button type="submit" class="btn btn-success btn-lg btnExits">Update exiting</button></a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
